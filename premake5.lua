@@ -1,4 +1,4 @@
-dofile("../../common.lua")
+dofile("../build-loadout/common.lua")
 
 RequireDefaultlibs()
 
@@ -7,10 +7,9 @@ SOLUTION        "glsock"
 targetdir       "bin"
 INCLUDES        "source_sdk"
 INCLUDES        "gmod_sdk"
-defines         {"NDEBUG"}
 
-includedirs{"../../boost-master"}
-libdirs{"../../boost-master/stage/lib"}
+includedirs{"../boost"}
+libdirs{"../boost/stage/lib"}
 
 WINDOWS()
 LINUX()
