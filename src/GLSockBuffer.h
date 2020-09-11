@@ -66,6 +66,7 @@ public:
 	unsigned int Size(void);
 
 	const char* Buffer( void );
+	void Append(CGLSockBuffer*);
 
 	bool EOB();
 	bool Empty();

@@ -160,7 +160,7 @@ static int Write(lua_State *state)
 	unsigned int nLen = 0;
 	const char *pData = LUA->GetString(2, &nLen);
 
-	LUA->PushNumber( pBuffer->Write(pData, nLen) );
+	LUA->PushNumber(pBuffer->Write(pData, nLen));
 	return 1;
 }
 
@@ -204,7 +204,7 @@ static int WriteString(lua_State *state)
 
 	const char *pData = LUA->GetString(2);
 
-	LUA->PushNumber( static_cast<double>(pBuffer->Write(pData, strlen(pData) + 1)) );
+	LUA->PushNumber( static_cast<double>(pBuffer->Write(pData, strlen(pData) + 1)));
 
 	return 1;
 }
@@ -266,7 +266,7 @@ static int WriteDouble(lua_State *state)
 			pBuffer->SwapEndian(nValue);
 	}
 
-	LUA->PushNumber( static_cast<double>(pBuffer->Write(nValue)) );
+	LUA->PushNumber( static_cast<double>(pBuffer->Write(nValue)));
 	return 1;
 }
 
@@ -321,7 +321,7 @@ static int WriteFloat(lua_State *state)
 			pBuffer->SwapEndian(nValue);
 	}
 
-	LUA->PushNumber( static_cast<double>(pBuffer->Write(nValue)) );
+	LUA->PushNumber( static_cast<double>(pBuffer->Write(nValue)));
 	return 1;
 }
 
@@ -378,7 +378,7 @@ static int _WriteInt(lua_State *state, bool sign)
 			pBuffer->SwapEndian(nValue);
 	}
 
-	LUA->PushNumber( static_cast<double>(pBuffer->Write(nValue)) );
+	LUA->PushNumber( static_cast<double>(pBuffer->Write(nValue)));
 	return 1;
 }
 
@@ -536,7 +536,7 @@ static int _WriteShort(lua_State *state, bool sign)
 			pBuffer->SwapEndian(nValue);
 	}
 
-	LUA->PushNumber( static_cast<double>(pBuffer->Write(nValue)) );
+	LUA->PushNumber( static_cast<double>(pBuffer->Write(nValue)));
 	return 1;
 }
 
@@ -751,6 +751,20 @@ static int Clear(lua_State *state)
 	return 1;
 }
 
+static int Append(lua_State *state)
+{
+	CGLSockBuffer* tBuffer = CheckBuffer(state, 1);
+	CGLSockBuffer* sBuffer = CheckBuffer(state, 2);
+
+	if (!tBuffer || !sBuffer)
+		return 0;
+
+	tBuffer->Append(sBuffer);
+
+	LUA->PushBool(true);
+	return 1;
+}
+
 void Startup( lua_State *state )
 {
 	LUA->CreateMetaTableType(GLSOCKBUFFER_NAME, GLSOCKBUFFER_TYPE);
@@ -795,6 +809,7 @@ void Startup( lua_State *state )
 			SetMember("EOB", GLSockBuffer::EOB);
 			SetMember("Empty", GLSockBuffer::Empty);
 			SetMember("Clear", GLSockBuffer::Clear);
+			SetMember("Append", GLSockBuffer::Append);
 		}
 		LUA->RawSet(-3);
 

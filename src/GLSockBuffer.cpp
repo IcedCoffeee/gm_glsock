@@ -115,6 +115,11 @@ const char* CGLSockBuffer::Buffer( void )
 	return m_Buf.c_str();
 }
 
+void CGLSockBuffer::Append(CGLSockBuffer* sourceBuff)
+{
+	m_Buf.append(sourceBuff->m_Buf);
+}
+
 bool CGLSockBuffer::EOB()
 {
 	return m_nOffset == m_Buf.size();
