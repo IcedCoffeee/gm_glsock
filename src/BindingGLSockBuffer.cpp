@@ -444,9 +444,9 @@ static int _WriteLong(lua_State *state, bool sign)
 
 	LUA->CheckType(2, GarrysMod::Lua::Type::NUMBER);
 
-	signed long nValue = static_cast<signed long>(LUA->GetNumber(2));
+	signed long long nValue = static_cast<signed long long>(LUA->GetNumber(2));
 	if (!sign)
-		nValue = static_cast<unsigned long>(nValue);
+		nValue = static_cast<unsigned long long>(nValue);
 
 	if (LUA->Top() >= 3)
 	{
@@ -477,9 +477,9 @@ static int _ReadLong(lua_State *state, bool sign)
 	if (!pBuffer)
 		return 0;
 
-	signed long nValue = 0;
+	signed long long nValue = 0;
 	if (!sign)
-		nValue = static_cast<unsigned long>(nValue);
+		nValue = static_cast<unsigned long long>(nValue);
 	unsigned int nRead = pBuffer->Read(nValue);
 
 	if (LUA->Top() >= 2)
