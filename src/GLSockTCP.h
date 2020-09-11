@@ -54,7 +54,7 @@ public:
 			//m_Sock.cancel(ec);
 			m_Sock.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
 			m_Sock.close(ec);
-			m_Sock.get_io_service().post(boost::bind(&CGLSockTCP::OnDestroy, this));
+			OnDestroy();
 		}
 		catch (boost::exception& ex)
 		{

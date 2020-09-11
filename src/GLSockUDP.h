@@ -51,7 +51,7 @@ public:
 			//m_Sock.cancel(ec);
 			m_Sock.shutdown(boost::asio::ip::udp::socket::shutdown_both, ec);
 			m_Sock.close(ec);
-			m_Sock.get_io_service().post(boost::bind(&CGLSockUDP::OnDestroy, this));
+			OnDestroy();
 		}
 		catch (boost::exception& ex)
 		{
