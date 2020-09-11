@@ -173,20 +173,20 @@ static int Read(lua_State *state)
 	LUA->CheckType(2, GarrysMod::Lua::Type::NUMBER);
 
 	unsigned int nReadBytes = static_cast<unsigned int>(LUA->GetNumber(2));
-	
+
 	char* szData = new char[nReadBytes + 1];
 	unsigned int nRead = pBuffer->Read(szData, nReadBytes);
 	szData[nRead] = '\0';
 
 	if( nReadBytes > 0 )
 	{
-		LUA->PushNumber(static_cast<double>(nReadBytes));
 		LUA->PushString(szData, nReadBytes);
+		LUA->PushNumber(static_cast<double>(nReadBytes));
 	}
 	else
 	{
-		LUA->PushNumber(0);
 		LUA->PushNil();
+		LUA->PushNumber(0);
 	}
 
 	delete[] szData;
@@ -214,7 +214,7 @@ static int ReadString(lua_State *state)
 	CGLSockBuffer* pBuffer = CheckBuffer(state, 1);
 	if( !pBuffer )
 		return 0;
-	
+
 	unsigned int uStringLength = 0;
 	const char* pData = pBuffer->Buffer();
 	bool bValid = false;
@@ -232,17 +232,17 @@ static int ReadString(lua_State *state)
 	if( bValid )
 	{
 		// Copy string.
-		LUA->PushNumber(static_cast<double>(uStringLength + 1));
 		std::string strData( pData + pBuffer->Tell(), uStringLength );
 		LUA->PushString(pData + pBuffer->Tell());
+		LUA->PushNumber(static_cast<double>(uStringLength + 1));
 
 		// Update position.
 		pBuffer->Seek(uStringLength + 1, SOCKBUFFER_SEEK_CUR);
 	}
 	else
 	{
-		LUA->PushNumber(0);
 		LUA->PushNil();
+		LUA->PushNumber(0);
 	}
 
 	return 2;
@@ -290,13 +290,13 @@ static int ReadDouble(lua_State *state)
 
 	if( nRead == 0 )
 	{
-		LUA->PushNumber(0);
 		LUA->PushNil();
+		LUA->PushNumber(0);
 	}
 	else
 	{
-		LUA->PushNumber(static_cast<double>(nRead));
 		LUA->PushNumber(static_cast<double>(nValue));
+		LUA->PushNumber(static_cast<double>(nRead));
 	}
 
 	return 2;
@@ -345,74 +345,177 @@ static int ReadFloat(lua_State *state)
 
 	if( nRead == 0 )
 	{
-		LUA->PushNumber(0);
 		LUA->PushNil();
+		LUA->PushNumber(0);
 	}
 	else
 	{
-		LUA->PushNumber(nRead);
 		LUA->PushNumber(static_cast<double>(nValue));
+		LUA->PushNumber(nRead);
 	}
 
 	return 2;
+}
+
+static int _WriteInt(lua_State *state, bool sign)
+{
+	CGLSockBuffer* pBuffer = CheckBuffer(state, 1);
+	if( !pBuffer )
+		return 0;
+
+	LUA->CheckType(2, GarrysMod::Lua::Type::NUMBER);
+
+	signed int nValue = static_cast<signed int>(LUA->GetNumber(2));
+	if (!sign)
+		nValue = static_cast<unsigned int>(nValue);
+
+	if( LUA->Top() >= 3 )
+	{
+		LUA->CheckType(3, GarrysMod::Lua::Type::BOOL);
+
+		bool bSwap = LUA->GetBool(3);
+		if( bSwap )
+			pBuffer->SwapEndian(nValue);
+	}
+
+	LUA->PushNumber( static_cast<double>(pBuffer->Write(nValue)) );
+	return 1;
+}
+
+static int WriteInt(lua_State *state)
+{
+	return _WriteInt(state, true);
+}
+
+static int WriteUInt(lua_State *state)
+{
+	return _WriteInt(state, false);
+}
+
+static int _ReadInt(lua_State *state, bool sign)
+{
+	CGLSockBuffer* pBuffer = CheckBuffer(state, 1);
+	if( !pBuffer )
+		return 0;
+
+	signed int nValue = 0;
+	if (!sign)
+		nValue = static_cast<unsigned int>(nValue);
+	unsigned int nRead = pBuffer->Read(nValue);
+
+	if( LUA->Top() >= 2 )
+	{
+		LUA->CheckType(2, GarrysMod::Lua::Type::BOOL);
+
+		bool bSwap = LUA->GetBool(2);
+		if( bSwap )
+			pBuffer->SwapEndian(nValue);
+	}
+
+	if( nRead == 0 )
+	{
+		LUA->PushNil();
+		LUA->PushNumber(0);
+	}
+	else
+	{
+		LUA->PushNumber(static_cast<double>(nValue));
+		LUA->PushNumber(static_cast<double>(nRead));
+	}
+
+	return 2;
+}
+
+static int ReadInt(lua_State *state)
+{
+	return _ReadInt(state, true);
+}
+
+static int ReadUInt(lua_State *state)
+{
+	return _ReadInt(state, false);
+}
+
+static int _WriteLong(lua_State *state, bool sign)
+{
+	CGLSockBuffer* pBuffer = CheckBuffer(state, 1);
+	if (!pBuffer)
+		return 0;
+
+	LUA->CheckType(2, GarrysMod::Lua::Type::NUMBER);
+
+	signed long nValue = static_cast<signed long>(LUA->GetNumber(2));
+	if (!sign)
+		nValue = static_cast<unsigned long>(nValue);
+
+	if (LUA->Top() >= 3)
+	{
+		LUA->CheckType(3, GarrysMod::Lua::Type::BOOL);
+
+		bool bSwap = LUA->GetBool(3);
+		if (bSwap)
+			pBuffer->SwapEndian(nValue);
+	}
+
+	LUA->PushNumber(static_cast<double>(pBuffer->Write(nValue)));
+	return 1;
 }
 
 static int WriteLong(lua_State *state)
 {
+	return _WriteLong(state, true);
+}
+
+static int WriteULong(lua_State *state)
+{
+	return _WriteLong(state, false);
+}
+
+static int _ReadLong(lua_State *state, bool sign)
+{
 	CGLSockBuffer* pBuffer = CheckBuffer(state, 1);
-	if( !pBuffer )
+	if (!pBuffer)
 		return 0;
 
-	LUA->CheckType(2, GarrysMod::Lua::Type::NUMBER);
+	signed long nValue = 0;
+	if (!sign)
+		nValue = static_cast<unsigned long>(nValue);
+	unsigned int nRead = pBuffer->Read(nValue);
 
-	unsigned int nValue = static_cast<unsigned int>(LUA->GetNumber(2));
-
-	if( LUA->Top() >= 3 )
+	if (LUA->Top() >= 2)
 	{
-		LUA->CheckType(3, GarrysMod::Lua::Type::BOOL);
+		LUA->CheckType(2, GarrysMod::Lua::Type::BOOL);
 
-		bool bSwap = LUA->GetBool(3);
-		if( bSwap )
+		bool bSwap = LUA->GetBool(2);
+		if (bSwap)
 			pBuffer->SwapEndian(nValue);
 	}
 
-	LUA->PushNumber( static_cast<double>(pBuffer->Write(nValue)) );
-	return 1;
+	if (nRead == 0)
+	{
+		LUA->PushNil();
+		LUA->PushNumber(0);
+	}
+	else
+	{
+		LUA->PushNumber(static_cast<double>(nValue));
+		LUA->PushNumber(static_cast<double>(nRead));
+	}
+
+	return 2;
 }
 
 static int ReadLong(lua_State *state)
 {
-	CGLSockBuffer* pBuffer = CheckBuffer(state, 1);
-	if( !pBuffer )
-		return 0;
-
-	unsigned int nValue = 0;
-	unsigned int nRead = pBuffer->Read(nValue);
-
-	if( LUA->Top() >= 2 )
-	{
-		LUA->CheckType(2, GarrysMod::Lua::Type::BOOL);
-
-		bool bSwap = LUA->GetBool(2);
-		if( bSwap )
-			pBuffer->SwapEndian(nValue);
-	}
-
-	if( nRead == 0 )
-	{
-		LUA->PushNumber(0);
-		LUA->PushNil();
-	}
-	else
-	{
-		LUA->PushNumber(static_cast<double>(nRead));
-		LUA->PushNumber(static_cast<double>(nValue));
-	}
-
-	return 2;
+	return _ReadLong(state, true);
 }
 
-static int WriteShort(lua_State *state)
+static int ReadULong(lua_State *state)
+{
+	return _ReadLong(state, false);
+}
+
+static int _WriteShort(lua_State *state, bool sign)
 {
 	CGLSockBuffer* pBuffer = CheckBuffer(state, 1);
 	if( !pBuffer )
@@ -420,7 +523,9 @@ static int WriteShort(lua_State *state)
 
 	LUA->CheckType(2, GarrysMod::Lua::Type::NUMBER);
 
-	unsigned short nValue = static_cast<unsigned short>(LUA->GetNumber(2));
+	signed short nValue = static_cast<signed short>(LUA->GetNumber(2));
+	if (!sign)
+		nValue = static_cast<unsigned short>(nValue);
 
 	if( LUA->Top() >= 3 )
 	{
@@ -435,13 +540,25 @@ static int WriteShort(lua_State *state)
 	return 1;
 }
 
-static int ReadShort(lua_State *state)
+static int WriteShort(lua_State *state)
+{
+	return _WriteShort(state, true);
+}
+
+static int WriteUShort(lua_State *state)
+{
+	return _WriteShort(state, false);
+}
+
+static int _ReadShort(lua_State *state, bool sign)
 {
 	CGLSockBuffer* pBuffer = CheckBuffer(state, 1);
 	if( !pBuffer )
 		return 0;
 
-	unsigned short nValue = 0;
+	short nValue = 0;
+	if (!sign)
+		nValue = static_cast<unsigned short>(nValue);
 	unsigned int nRead = pBuffer->Read(nValue);
 
 	if( LUA->Top() >= 2 )
@@ -455,53 +572,105 @@ static int ReadShort(lua_State *state)
 
 	if( nRead == 0 )
 	{
-		LUA->PushNumber(0);
 		LUA->PushNil();
+		LUA->PushNumber(0);
 	}
 	else
 	{
-		LUA->PushNumber(static_cast<double>(nRead));
 		LUA->PushNumber(static_cast<double>(nValue));
+		LUA->PushNumber(static_cast<double>(nRead));
 	}
 
 	return 2;
+}
+
+static int ReadShort(lua_State *state)
+{
+	return _ReadShort(state, true);
+}
+
+static int ReadUShort(lua_State *state)
+{
+	return _ReadShort(state, false);
+}
+
+static int _WriteByte(lua_State *state, bool sign)
+{
+	CGLSockBuffer* pBuffer = CheckBuffer(state, 1);
+	if (!pBuffer)
+		return 0;
+
+	LUA->CheckType(2, GarrysMod::Lua::Type::NUMBER);
+
+	signed char nValue = static_cast<signed char>(LUA->GetNumber(2));
+	if (!sign)
+		nValue = static_cast<unsigned char>(nValue);
+
+	LUA->PushNumber(static_cast<double>(pBuffer->Write(nValue)));
+	return 1;
 }
 
 static int WriteByte(lua_State *state)
 {
-	CGLSockBuffer* pBuffer = CheckBuffer(state, 1);
-	if( !pBuffer )
-		return 0;
-
-	LUA->CheckType(2, GarrysMod::Lua::Type::NUMBER);
-	
-	unsigned char nValue = static_cast<unsigned char>(LUA->GetNumber(2));
-
-	LUA->PushNumber( static_cast<double>(pBuffer->Write(nValue)) );
-	return 1;
+	return _WriteByte(state, false);
 }
 
-static int ReadByte(lua_State *state)
+static int WriteSByte(lua_State *state)
+{
+	return _WriteByte(state, true);
+}
+
+static int _ReadByte(lua_State *state, bool sign)
 {
 	CGLSockBuffer* pBuffer = CheckBuffer(state, 1);
 	if( !pBuffer )
 		return 0;
 
-	unsigned char nValue = 0;
+	signed char nValue = 0;
+	if (!sign)
+		nValue = static_cast<unsigned char>(nValue);
 	unsigned int nRead = pBuffer->Read(nValue);
 
 	if( nRead == 0 )
 	{
-		LUA->PushNumber(0);
 		LUA->PushNil();
+		LUA->PushNumber(0);
 	}
 	else
 	{
-		LUA->PushNumber(static_cast<double>(nRead));
 		LUA->PushNumber(static_cast<double>(nValue));
+		LUA->PushNumber(static_cast<double>(nRead));
 	}
 
 	return 2;
+}
+
+static int ReadByte(lua_State *state)
+{
+	return _ReadByte(state, false);
+}
+
+static int ReadSByte(lua_State *state)
+{
+	return _ReadByte(state, true);
+}
+
+static int WriteChar(lua_State *state)
+{
+	CGLSockBuffer* pBuffer = CheckBuffer(state, 1);
+	if (!pBuffer)
+		return 0;
+
+	LUA->CheckType(2, GarrysMod::Lua::Type::STRING);
+
+	const char* nStr = LUA->GetString(2);
+	if (strlen(nStr) != 1)
+		return 0;
+
+	unsigned char nValue = static_cast<unsigned char>(nStr[0]);
+
+	LUA->PushNumber(static_cast<double>(pBuffer->Write(nValue)));
+	return 1;
 }
 
 static int Size(lua_State *state)
@@ -602,12 +771,23 @@ void Startup( lua_State *state )
 			SetMember("ReadDouble", GLSockBuffer::ReadDouble);
 			SetMember("WriteFloat", GLSockBuffer::WriteFloat);
 			SetMember("ReadFloat", GLSockBuffer::ReadFloat);
+			SetMember("WriteInt", GLSockBuffer::WriteInt);
+			SetMember("WriteUInt", GLSockBuffer::WriteUInt);
+			SetMember("ReadInt", GLSockBuffer::ReadInt);
+			SetMember("ReadUInt", GLSockBuffer::ReadUInt);
 			SetMember("WriteLong", GLSockBuffer::WriteLong);
+			SetMember("WriteULong", GLSockBuffer::WriteULong);
 			SetMember("ReadLong", GLSockBuffer::ReadLong);
+			SetMember("ReadULong", GLSockBuffer::ReadULong);
 			SetMember("WriteShort", GLSockBuffer::WriteShort);
+			SetMember("WriteUShort", GLSockBuffer::WriteUShort);
 			SetMember("ReadShort", GLSockBuffer::ReadShort);
+			SetMember("ReadUShort", GLSockBuffer::ReadUShort);
 			SetMember("WriteByte", GLSockBuffer::WriteByte);
+			SetMember("WriteSByte", GLSockBuffer::WriteSByte);
 			SetMember("ReadByte", GLSockBuffer::ReadByte);
+			SetMember("ReadSByte", GLSockBuffer::ReadSByte);
+			SetMember("WriteChar", GLSockBuffer::WriteChar);
 
 			SetMember("Size", GLSockBuffer::Size);
 			SetMember("Tell", GLSockBuffer::Tell);
@@ -626,7 +806,7 @@ void Startup( lua_State *state )
 
 		#undef SetMember
 	}
-	
+
 	LuaSetGlobal(state, "GLSockBuffer", GLSockBuffer::__new);
 
 	// Seek Methods
