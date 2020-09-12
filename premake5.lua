@@ -11,13 +11,17 @@ INCLUDES        "gmod_sdk"
 includedirs{"../boost"}
 libdirs{"../boost/stage/lib"}
 
-WINDOWS()
-LINUX()
+if os.target() == "windows" then
+	WINDOWS()
+	configuration           "windows"
+elseif os.target() == "linux" then
+	LINUX()
+	configuration           "linux"
+end
+
 
 PROJECT()
 SOURCE_SDK_LINKS()
-configuration           "windows"
-configuration           "linux"
   links{
     "boost_atomic",
     "boost_chrono",
@@ -49,4 +53,4 @@ configuration           "linux"
     "boost_wave",
     "boost_wserialization",
     "pthread",
-  }
+}
