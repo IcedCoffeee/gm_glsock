@@ -60,7 +60,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L/home/matt/boost_1_42_0/stage/lib -static -lboost_date_time-gcc46-mt-s-1_42 -lboost_regex-gcc46-mt-s-1_42 -lboost_serialization-gcc46-s-1_42 -lboost_system-gcc46-mt-s-1_42 -lboost_thread-gcc46-mt-s-1_42
+LDLIBSOPTIONS=-static -lboost_date_time-gcc46-mt-s-1_42 -lboost_regex-gcc46-mt-s-1_42 -lboost_serialization-gcc46-s-1_42 -lboost_system-gcc46-mt-s-1_42 -lboost_thread-gcc46-mt-s-1_42
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}

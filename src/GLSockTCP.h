@@ -59,7 +59,7 @@ public:
 		catch (boost::exception& ex)
 		{
 #if defined(_DEBUG)
-			//LUA->Msg("GLSock(TCP): %s\n",  boost::diagnostic_information(ex).c_str());
+			LUA->Msg("GLSock(TCP): %s\n",  boost::diagnostic_information(ex).c_str());
 #endif
 			UNREFERENCED_PARAM(ex);
 		}

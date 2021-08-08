@@ -16,6 +16,7 @@ CSockMgr::~CSockMgr( void )
 
 void CSockMgr::Startup()
 {
+	m_IOService.reset();
 }
 
 void CSockMgr::Cleanup()

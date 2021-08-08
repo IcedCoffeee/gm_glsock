@@ -1,4 +1,5 @@
-dofile("../build-loadout/common.lua")
+DEBUG=true
+dofile("../common.lua")
 
 RequireDefaultlibs()
 
@@ -8,8 +9,8 @@ targetdir       "bin"
 INCLUDES        "source_sdk"
 INCLUDES        "gmod_sdk"
 
-includedirs{"../boost"}
-libdirs{"../boost/stage/lib"}
+includedirs{"../../boost"}
+libdirs{"../../boost/stage/lib"}
 
 if os.target() == "windows" then
 	WINDOWS()

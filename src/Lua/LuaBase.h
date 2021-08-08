@@ -3,8 +3,22 @@
 #define GARRYSMOD_LUA_LUABASE_H
 
 #include <stddef.h>
+#include <string>
 
 struct lua_State;
+
+struct vec3_t
+{
+	float x, y, z;
+};
+
+struct clr_t
+{
+	unsigned char r, g, b;
+
+};
+
+typedef int (__cdecl* CLuaFunction)(lua_State*);
 
 namespace GarrysMod 
 {
@@ -87,6 +101,88 @@ namespace GarrysMod
 				//
 				virtual const char*		CheckString( int iStackPos = -1 ) = 0;
 				virtual double			CheckNumber( int iStackPos = -1 ) = 0;
+				
+				virtual void ObjLen( int ) = 0;
+				virtual void GetAngle( int ) = 0;
+				virtual void GetVector( int ) = 0;
+				virtual void PushAngle( vec3_t const& ) = 0;
+				virtual void PushVector( vec3_t const& ) = 0;
+				virtual void SetState( lua_State * ) = 0;
+				virtual void CreateMetaTable( char const* ) = 0;
+				virtual void PushMetaTable( int ) = 0;
+				virtual void PushUserType( void *, int ) = 0;
+				virtual void SetUserType( int, void * ) = 0;
+				virtual void Init( void *, bool ) = 0;
+				virtual void Shutdown( void ) = 0;
+				virtual void Cycle( void ) = 0;
+				virtual void Global( void ) = 0;
+				virtual void* GetObject( int ) = 0;
+				virtual void PushLuaObject( void * ) = 0;
+				virtual void PushLuaFunction( CLuaFunction ) = 0;
+				virtual void LuaError( char const*, int ) = 0;
+				virtual void TypeError( char const*, int ) = 0;
+				virtual void CallInternal( int, int ) = 0;
+				virtual void CallInternalNoReturns( int ) = 0;
+				virtual void CallInternalGetBool( int ) = 0;
+				virtual void CallInternalGetString( int ) = 0;
+				virtual void CallInternalGet( int, void * ) = 0;
+				virtual void NewGlobalTable( char const* ) = 0;
+				virtual void NewTemporaryObject( void ) = 0;
+				virtual void isUserData( int ) = 0;
+				virtual void GetMetaTableObject( char const*, int ) = 0;
+				virtual void GetMetaTableObject( int ) = 0;
+				virtual void GetReturn( int ) = 0;
+				virtual void IsServer( void ) = 0;
+				virtual void IsClient( void ) = 0;
+				virtual void IsDedicatedServer( void ) = 0;
+				virtual void DestroyObject( void * ) = 0;
+				virtual void CreateObject( void ) = 0;
+				virtual void SetMember( void *, void *, void * ) = 0;
+				virtual void GetNewTable( void ) = 0;
+				virtual void SetMember( void *, float ) = 0;
+				virtual void SetMember( void *, float, void * ) = 0;
+				virtual void SetMember( void *, char const* ) = 0;
+				virtual void SetMember( void *, char const*, void * ) = 0;
+				virtual void SetIsServer( bool ) = 0;
+				virtual void PushLong( long ) = 0;
+				virtual void GetFlags( int ) = 0;
+				virtual void FindOnObjectsMetaTable( int, int ) = 0;
+				virtual void FindObjectOnTable( int, int ) = 0;
+				virtual void SetMemberFast( void *, int, int ) = 0;
+				virtual void RunString( char const* filename, char const* path, char const* stringtoun, bool run = true, bool showerrors = true ) = 0;
+				virtual void IsEqual( void *, void * ) = 0;
+				virtual void Error( char const* ) = 0;
+				virtual void GetStringOrError( int ) = 0;
+				virtual void RunLuaModule( char const* ) = 0;
+				virtual void FindAndRunScript( const char* path, bool run = true, bool showerrors = true, const char* type = "!CLIENT" ) = 0;
+				virtual void SetPathID( char const* ) = 0;
+				virtual void GetPathID( void ) = 0;
+				virtual void ErrorNoHalt( char const*, ... ) = 0;
+				virtual void Msg( char const*, ... ) = 0;
+				virtual void PushPath( char const* ) = 0;
+				virtual void PopPath( void ) = 0;
+				virtual void GetPath( void ) = 0;
+				virtual void GetColor( int ) = 0;
+				virtual void PushColor( clr_t ) = 0;
+				virtual int GetStack( int, void * ) = 0;
+				virtual void GetInfo( char const*, void * ) = 0;
+				virtual void GetLocal( void *, int ) = 0;
+				virtual void GetUpvalue( int, int ) = 0;
+				virtual void RunStringEx( void*, char const* filename, char const* path, char const* torun, bool run, bool showerrors, bool idk, bool idk2 ) = 0;
+				virtual void GetDataString( int, void ** ) = 0;
+				virtual void ErrorFromLua( char const*, ... ) = 0;
+				virtual void GetCurrentLocation( void ) = 0;
+				virtual void MsgColour( clr_t const&, char const*, ... ) = 0;
+				virtual void GetCurrentFile( std::string & ) = 0;
+				virtual void CompileString( int &, std::string const& ) = 0;
+				virtual void CallFunctionProtected( int, int, bool ) = 0;
+				virtual void Require( char const* ) = 0;
+				virtual void GetActualTypeName( int ) = 0;
+				virtual void PreCreateTable( int, int ) = 0;
+				virtual void PushPooledString( int ) = 0;
+				virtual void GetPooledString( int ) = 0;
+				virtual void AddThreadedCall( void * ) = 0;
+				lua_State* L;
 
 		};
 

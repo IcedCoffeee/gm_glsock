@@ -68,7 +68,7 @@ public:
 		}
 		catch (boost::exception& ex)
 		{
-			//LUA->Msg("GLSock(Polling): %s\n",  boost::diagnostic_information(ex).c_str());
+			LUA->Msg("GLSock(Polling): %s\n",  boost::diagnostic_information(ex).c_str());
 			UNREFERENCED_PARAM(ex);
 		}
 	}

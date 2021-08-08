@@ -18,7 +18,7 @@ CGLSockTCP::CGLSockTCP( IOService_t& IOService, lua_State* pLua, bool bOpen )
 	}
 	catch (boost::exception& ex)
 	{
-		//LUA->Msg("GLSock(TCP): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(TCP): %s\n",  boost::diagnostic_information(ex).c_str());
 		UNREFERENCED_PARAM(ex);
 	}
 }
@@ -37,13 +37,13 @@ bool CGLSockTCP::Bind( CEndpoint& Endpoint, Callback_t Callback )
 		if( ec )
 		{
 #if defined(_DEBUG)
-			//LUA->Msg("GLSock(TCP): Unable to bind to %s:%u\n", ep.address().to_string().c_str(), ep.port());
+			LUA->Msg("GLSock(TCP): Unable to bind to %s:%u\n", ep.address().to_string().c_str(), ep.port());
 #endif
 		}
 		else
 		{
 #if defined(_DEBUG)
-			//LUA->Msg("GLSock(TCP): Bound to %s:%u\n", ep.address().to_string().c_str(), ep.port());
+			LUA->Msg("GLSock(TCP): Bound to %s:%u\n", ep.address().to_string().c_str(), ep.port());
 #endif
 		}
 		if( g_pSockMgr->ValidHandle(this) )
@@ -52,7 +52,7 @@ bool CGLSockTCP::Bind( CEndpoint& Endpoint, Callback_t Callback )
 	catch (boost::exception& ex)
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(TCP): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(TCP): %s\n",  boost::diagnostic_information(ex).c_str());
 #endif
 		UNREFERENCED_PARAM(ex);
 		bResult = false;
@@ -70,15 +70,17 @@ bool CGLSockTCP::Connect( std::string strHost, std::string strPort, Callback_t C
 		TCPResolver_t::query query(strHost, strPort);
 		TCPResolver_t::iterator endpoint_iterator = m_Resolver.resolve(query);
 
+		boost::asio::ip::tcp::no_delay option(true);
+		m_Sock.set_option(option);
+
 		boost::asio::ip::tcp::endpoint endpoint = *endpoint_iterator;
 
-		m_Sock.async_connect( endpoint,
-			boost::bind(&CGLSockTCP::OnConnect, this, Callback, boost::asio::placeholders::error, ++endpoint_iterator ));
+		m_Sock.async_connect( endpoint, boost::bind(&CGLSockTCP::OnConnect, this, Callback, boost::asio::placeholders::error, ++endpoint_iterator ));
 	}
 	catch (boost::exception& ex)
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(TCP): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(TCP): %s\n",  boost::diagnostic_information(ex).c_str());
 #endif
 		UNREFERENCED_PARAM(ex);
 		bResult = false;
@@ -99,7 +101,7 @@ bool CGLSockTCP::Send( const char* cbData, unsigned int cubBuffer, Callback_t Ca
 	catch (boost::exception& ex)
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(TCP): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(TCP): %s\n",  boost::diagnostic_information(ex).c_str());
 #endif
 		UNREFERENCED_PARAM(ex);
 		bResult = false;
@@ -122,7 +124,7 @@ bool CGLSockTCP::Read( unsigned int cubBuffer, Callback_t Callback )
 	catch (boost::exception& ex)
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(TCP): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(TCP): %s\n",  boost::diagnostic_information(ex).c_str());
 #endif
 		UNREFERENCED_PARAM(ex);
 		bResult = false;
@@ -145,7 +147,7 @@ bool CGLSockTCP::ReadUntil( std::string strDelimiter, Callback_t Callback )
 	catch (boost::exception& ex)
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(TCP): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(TCP): %s\n",  boost::diagnostic_information(ex).c_str());
 #endif
 		UNREFERENCED_PARAM(ex);
 		bResult = false;
@@ -173,7 +175,7 @@ bool CGLSockTCP::Close( void )
 	catch (boost::exception& ex)
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(TCP): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(TCP): %s\n",  boost::diagnostic_information(ex).c_str());
 #endif
 		UNREFERENCED_PARAM(ex);
 		bResult = false;
@@ -209,7 +211,7 @@ void CGLSockTCP::OnConnect( Callback_t Callback, const boost::system::error_code
 	if( !ec )
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(TCP): Connected to Host!\n");
+		LUA->Msg("GLSock(TCP): Connected to Host!\n");
 #endif
 
 		if( g_pSockMgr->ValidHandle(this) )
@@ -220,7 +222,7 @@ void CGLSockTCP::OnConnect( Callback_t Callback, const boost::system::error_code
 		if( endpoint_iterator != boost::asio::ip::tcp::resolver::iterator() )
 		{
 #if defined(_DEBUG)
-			//LUA->Msg("GLSock(TCP): Connect attempt failed, trying next resolver.\n");
+			LUA->Msg("GLSock(TCP): Connect attempt failed, trying next resolver.\n");
 #endif
 
 			boost::asio::ip::tcp::endpoint endpoint = *endpoint_iterator;
@@ -232,7 +234,7 @@ void CGLSockTCP::OnConnect( Callback_t Callback, const boost::system::error_code
 		else
 		{
 #if defined(_DEBUG)
-			//LUA->Msg("GLSock(TCP) Connection failed: %s\n", ec.message().c_str());
+			LUA->Msg("GLSock(TCP) Connection failed: %s\n", ec.message().c_str());
 #endif
 			if( g_pSockMgr->ValidHandle(this) )
 				g_pSockMgr->StoreCallback( this, boost::bind(&CGLSock::CallbackConnect, this, Callback, this, TranslateErrorMessage(ec), _1) );
@@ -245,7 +247,7 @@ void CGLSockTCP::OnSend( Callback_t Callback, unsigned int cubBytes, const boost
 	if( ec )
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(TCP): %s\n", ec.message().c_str());
+		LUA->Msg("GLSock(TCP): %s\n", ec.message().c_str());
 #endif
 	}
 
@@ -260,7 +262,7 @@ void CGLSockTCP::OnRead( Callback_t Callback, const char* pData, unsigned int cu
 	if( ec )
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(TCP): %s\n", ec.message().c_str());
+		LUA->Msg("GLSock(TCP): %s\n", ec.message().c_str());
 #endif
 	}
 	else
@@ -284,7 +286,7 @@ void CGLSockTCP::OnReadUntil( Callback_t Callback, std::string strDelimiter, con
 	if( ec )
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(TCP): %s\n", ec.message().c_str());
+		LUA->Msg("GLSock(TCP): %s\n", ec.message().c_str());
 #endif
 		delete pData;
 

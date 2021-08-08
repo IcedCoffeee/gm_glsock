@@ -18,7 +18,7 @@ CGLSockUDP::CGLSockUDP( IOService_t& IOService, lua_State* pLua )
 	}
 	catch (boost::exception& ex)
 	{
-		//LUA->Msg("GLSock(UDP): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(UDP): %s\n",  boost::diagnostic_information(ex).c_str());
 		UNREFERENCED_PARAM(ex);
 	}
 }
@@ -37,13 +37,13 @@ bool CGLSockUDP::Bind( CEndpoint& Endpoint, Callback_t Callback )
 		if( ec )
 		{
 #if defined(_DEBUG)
-			//LUA->Msg("GLSock(UDP): Unable to bind to %s:%u\n", ep.address().to_string().c_str(), ep.port());
+			LUA->Msg("GLSock(UDP): Unable to bind to %s:%u\n", ep.address().to_string().c_str(), ep.port());
 #endif
 		}
 		else
 		{
 #if defined(_DEBUG)
-			//LUA->Msg("GLSock(UDP): Bound to %s:%u\n", ep.address().to_string().c_str(), ep.port());
+			LUA->Msg("GLSock(UDP): Bound to %s:%u\n", ep.address().to_string().c_str(), ep.port());
 #endif
 		}
 		if( g_pSockMgr->ValidHandle(this) )
@@ -52,7 +52,7 @@ bool CGLSockUDP::Bind( CEndpoint& Endpoint, Callback_t Callback )
 	catch (boost::exception& ex)
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(UDP): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(UDP): %s\n",  boost::diagnostic_information(ex).c_str());
 #endif
 		UNREFERENCED_PARAM(ex);
 		bResult = false;
@@ -76,7 +76,7 @@ bool CGLSockUDP::SendTo( const char* cbData, unsigned int cubBuffer, std::string
 		boost::asio::ip::udp::endpoint ep = *iterator;
 
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(UDP): Send attempt to %s:%u\n", ep.address().to_string().c_str(), ep.port());
+		LUA->Msg("GLSock(UDP): Send attempt to %s:%u\n", ep.address().to_string().c_str(), ep.port());
 #endif
 
 		m_Sock.async_send_to( boost::asio::buffer(pBuffer, cubBuffer),
@@ -95,7 +95,7 @@ bool CGLSockUDP::SendTo( const char* cbData, unsigned int cubBuffer, std::string
 	catch (boost::exception& ex)
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(UDP): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(UDP): %s\n",  boost::diagnostic_information(ex).c_str());
 #endif
 		UNREFERENCED_PARAM(ex);
 		bResult = false;
@@ -120,7 +120,7 @@ bool CGLSockUDP::ReadFrom(unsigned int cubBuffer, Callback_t Callback )
 	catch (boost::exception& ex)
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(UDP): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(UDP): %s\n",  boost::diagnostic_information(ex).c_str());
 #endif
 		UNREFERENCED_PARAM(ex);
 		bResult = false;
@@ -148,7 +148,7 @@ bool CGLSockUDP::Close( void )
 	catch (boost::exception& ex)
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(UDP): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(UDP): %s\n",  boost::diagnostic_information(ex).c_str());
 #endif
 		UNREFERENCED_PARAM(ex);
 		bResult = false;
@@ -183,7 +183,7 @@ void CGLSockUDP::OnSend( Callback_t Callback, unsigned int cubBytes, const boost
 			boost::asio::ip::udp::endpoint ep = *iterator;
 
 #if defined(_DEBUG)
-			//LUA->Msg("GLSock(UDP): Send attempt to %s:%u\n", ep.address().to_string().c_str(), ep.port());
+			LUA->Msg("GLSock(UDP): Send attempt to %s:%u\n", ep.address().to_string().c_str(), ep.port());
 #endif
 
 			m_Sock.async_send_to( boost::asio::buffer(pBuffer, cubBuffer),
@@ -216,7 +216,7 @@ void CGLSockUDP::OnRead( Callback_t Callback, boost::asio::ip::udp::endpoint* pS
 	if( ec )
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(UDP): %s\n", ec.message().c_str());
+		LUA->Msg("GLSock(UDP): %s\n", ec.message().c_str());
 #endif
 	}
 	else

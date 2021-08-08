@@ -19,7 +19,7 @@ CGLSockAcceptor::CGLSockAcceptor( IOService_t& IOService_t, lua_State* pLua )
 	}
 	catch (boost::exception& ex)
 	{
-		//LUA->Msg("GLSock(Acceptor): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(Acceptor): %s\n",  boost::diagnostic_information(ex).c_str());
 		UNREFERENCED_PARAM(ex);
 	}
 }
@@ -38,13 +38,13 @@ bool CGLSockAcceptor::Bind( CEndpoint& Endpoint, Callback_t Callback )
 		if( ec )
 		{
 #if defined(_DEBUG)
-			//LUA->Msg("GLSock(Acceptor): Unable to bind to %s:%u\n", ep.address().to_string().c_str(), ep.port());
+			LUA->Msg("GLSock(Acceptor): Unable to bind to %s:%u\n", ep.address().to_string().c_str(), ep.port());
 #endif
 		}
 		else
 		{
 #if defined(_DEBUG)
-			//LUA->Msg("GLSock(Acceptor): Bound to %s:%u\n", ep.address().to_string().c_str(), ep.port());
+			LUA->Msg("GLSock(Acceptor): Bound to %s:%u\n", ep.address().to_string().c_str(), ep.port());
 #endif
 		}
 
@@ -54,7 +54,7 @@ bool CGLSockAcceptor::Bind( CEndpoint& Endpoint, Callback_t Callback )
 	catch (boost::exception& ex)
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(Acceptor): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(Acceptor): %s\n",  boost::diagnostic_information(ex).c_str());
 #endif
 		UNREFERENCED_PARAM(ex);
 		bResult = false;
@@ -75,7 +75,7 @@ bool CGLSockAcceptor::Listen( int iBacklog, Callback_t Callback )
 		if( ec )
 		{
 #if defined(_DEBUG)
-			//LUA->Msg("GLSock(Acceptor): %s\n", ec.message().c_str());
+			LUA->Msg("GLSock(Acceptor): %s\n", ec.message().c_str());
 #endif
 		}
 		if( g_pSockMgr->ValidHandle(this) )
@@ -84,7 +84,7 @@ bool CGLSockAcceptor::Listen( int iBacklog, Callback_t Callback )
 	catch (boost::exception& ex)
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(Acceptor): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(Acceptor): %s\n",  boost::diagnostic_information(ex).c_str());
 #endif
 		UNREFERENCED_PARAM(ex);
 		bResult = false;
@@ -107,7 +107,7 @@ bool CGLSockAcceptor::Accept( Callback_t Callback )
 	catch (boost::exception& ex)
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(Acceptor): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(Acceptor): %s\n",  boost::diagnostic_information(ex).c_str());
 #endif
 		UNREFERENCED_PARAM(ex);
 		bResult = false;
@@ -135,7 +135,7 @@ bool CGLSockAcceptor::Close( void )
 	catch (boost::exception& ex)
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(Acceptor): %s\n",  boost::diagnostic_information(ex).c_str());
+		LUA->Msg("GLSock(Acceptor): %s\n",  boost::diagnostic_information(ex).c_str());
 #endif
 		UNREFERENCED_PARAM(ex);
 		bResult = false;
@@ -166,7 +166,7 @@ void CGLSockAcceptor::OnAccept( Callback_t Callback, CGLSockTCP* pSock, const bo
 	if( ec )
 	{
 #if defined(_DEBUG)
-		//LUA->Msg("GLSock(Acceptor): %s\n", ec.message().c_str());
+		LUA->Msg("GLSock(Acceptor): %s\n", ec.message().c_str());
 #endif
 		if( g_pSockMgr->ValidHandle(pSock) )
 		{
